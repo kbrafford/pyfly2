@@ -1,6 +1,6 @@
 # -*- coding: latin-1 -*-
 """
-.. module:: pflycapture2_C
+.. module:: pyfly2
    :platform: Windows
    :synopsis: A Python wrapper for the FlyCapture2 C API from Point Grey Research
 
@@ -108,7 +108,7 @@ def library_version():
     
 
 cdef class Camera(object):
-    """"""
+    """Camera object"""
     image_format_map = {
                        "ext"       :  FC2_FROM_FILE_EXT,
                        "PGM"       :  FC2_PGM,
@@ -132,6 +132,7 @@ cdef class Camera(object):
         pass
 
     def __init__(self, my_context_int, v0,v1, v2, v3):
+        """Keith"""
         self._container.as_int = my_context_int
         self._context = self._container.as_void        
         self.guid.value[0] = v0
@@ -140,15 +141,19 @@ cdef class Camera(object):
         self.guid.value[3] = v3
 
     def Connect(self):
+        """Hello"""
         errcheck(fc2Connect(self._context, &self.guid))
 
     def StartCapture(self):
+        """Hello"""
         errcheck(fc2StartCapture(self._context))
 
     def StopCapture(self):
+        """Hello"""
         errcheck(fc2StopCapture(self._context))
 
     def GrabImageToDisk(self, filename, format="ext"):
+        """"""
         cdef fc2Image rawImage
         cdef fc2Image convertedImage
                        
@@ -170,6 +175,7 @@ cdef class Camera(object):
         errcheck(fc2DestroyImage( &convertedImage ))
 
     def GrabImageToMemory(self, format="BMP"):
+        """Hey"""
         cdef fc2Image rawImage
         cdef fc2Image convertedImage
                 
@@ -193,18 +199,21 @@ cdef class Camera(object):
         return imagedata
     
     def GrabWxBitmap(self, format = "BMP"):
+        """Hey"""
         import wx        
         import cStringIO
         image = wx.ImageFromStream(cStringIO.StringIO(self.GrabImageToMemory(format)))
         return image.ConvertToBitmap()
 
     def GrabWxImage(self, format = "BMP"):
+        """Hey"""
         import wx
         import cStringIO
         image = wx.ImageFromStream(cStringIO.StringIO(self.GrabImageToMemory(format)))
         return image
 
     def DemoGrabImages(self, numImagesToGrab):
+        """Hey"""
         cdef fc2Image rawImage
         cdef fc2Image convertedImage
         cdef fc2TimeStamp prevTimestamp
@@ -249,6 +258,7 @@ cdef class Camera(object):
         errcheck(fc2DestroyImage( &convertedImage ))
 
     property timestamping:
+        """Hey"""
         def __get__(self):
             cdef fc2EmbeddedImageInfo embeddedInfo
             errcheck(fc2GetEmbeddedImageInfo(self._context, &embeddedInfo))
@@ -262,6 +272,7 @@ cdef class Camera(object):
             errcheck(fc2SetEmbeddedImageInfo(self._context, &embeddedInfo))
             
     property info:
+        """Hey"""
         def __get__(self):
             cdef fc2CameraInfo camInfo
             errcheck(fc2GetCameraInfo(self._context, &camInfo))            
@@ -276,7 +287,7 @@ cdef class Camera(object):
                     }
 
 cdef class Context(object):
-    """"""
+    """Hey"""
     cdef fc2Context _context
     cdef fc2ContextContainer _container        
 
@@ -287,21 +298,22 @@ cdef class Context(object):
         pass
 
     def __init__(self):
-        """"""        
+        """Hey"""
         errcheck(fc2CreateContext(&self._context))
         self._container.as_void = self._context
    
     def __repr__(self):
-        return "pyflycapture2_C.Context object at 0x%08X" % id(self)
+        return "pyfly2.Context object at 0x%08X" % id(self)
 
     property num_cameras:
-        """"""
+        """Hey"""
         def __get__(self):
             cdef unsigned int num_cameras
             errcheck(fc2GetNumOfCameras(self._context, &num_cameras))
             return num_cameras
 
-    def get_camera(self, unsigned int index):   
+    def get_camera(self, unsigned int index):
+        """Hey"""
         cdef fc2PGRGuid guid
         errcheck(fc2GetCameraFromIndex(self._context, index, &guid))        
         cdef unsigned int c = self._container.as_int
