@@ -5,6 +5,8 @@
 pyfly2
 ======
 
+   pyfly2 is a Python wrapper for Point Grey Research’s FlyCapture2 C API.
+
 .. toctree::
    :numbered:
    :maxdepth: 2
