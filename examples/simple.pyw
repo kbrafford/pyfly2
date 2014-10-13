@@ -1,7 +1,7 @@
 import wx
 from PIL import Image
 from PIL import ImageDraw
-from PIL import ImageFont
+#from PIL import ImageFont
 import time
 import pyfly2
 
@@ -64,7 +64,8 @@ class Frame(wx.Frame):
         self.camera = camera
         self.mainsizer = wx.BoxSizer(wx.VERTICAL)
         self.sizer = wx.BoxSizer(wx.HORIZONTAL)
-        font = ImageFont.truetype("arial.ttf", 20)
+        #font = ImageFont.truetype("arial.ttf", 20)
+        font = None
         self.p = Panel(self, self.camera, font)
         self.sizer.Add(self.p, 1, wx.EXPAND)
         self.mainsizer.Add(self.sizer, 1, wx.EXPAND)
