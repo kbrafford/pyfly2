@@ -1,0 +1,6 @@
+*.pyc
+*.dll
+*.png
+*.jpg
+*.c
+build/*.*

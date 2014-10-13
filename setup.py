@@ -15,7 +15,7 @@ FLYCAPTURESDK = r'C:\Program Files (x86)\Point Grey Research\FlyCapture2'
 FLYCAPTURE2LIBDIR = os.path.join(FLYCAPTURESDK, 'lib')
 
 setup(
-    name = 'pyflyc2',
+    name = 'pyfly2',
     version = '0.1',
     description = desc,
     cmdclass = {'build_ext': build_ext},

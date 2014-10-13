@@ -54,6 +54,62 @@ error_dict = {
     FC2_ERROR_IMAGE_CONSISTENCY_ERROR :      "There is an image consistency error.",
     } 
 
+class FCVideoMode(object):
+    """Enum describing different video modes."""
+    _160x120YUV444     = 0
+    _320x240YUV422     = 1
+    _640x480YUV411     = 2
+    _640x480YUV422     = 3
+    _640x480RGB        = 4
+    _640x480Y8         = 5
+    _640x480Y16        = 6
+    _800x600YUV422     = 7
+    _800x600RGB        = 8
+    _800x600Y8         = 9
+    _800x600Y16        = 10
+    _1024x768YUV422    = 11
+    _1024x768RGB       = 12
+    _1024x768Y8        = 13
+    _1024x768Y16       = 14
+    _1280x960YUV422    = 15
+    _1280x960RGB       = 16
+    _1280x960Y8        = 17
+    _1280x960Y16       = 18
+    _1600x1200YUV422   = 19
+    _1600x1200RGB      = 20
+    _1600x1200Y8       = 21
+    _1600x1200Y16      = 22
+    _FORMAT7           = 23
+    _NUM_VIDEOMODES    = 24
+    _FORCE_32BITS      = 0x7FFFFFFF
+
+class FCFrameRate(object):
+    """Enum describing different framerates."""
+    _1_875           = 0
+    _3_75            = 1
+    _7_5             = 2
+    _15              = 3
+    _30              = 4
+    _60              = 5
+    _120             = 6
+    _240             = 7
+    _FORMAT7         = 8
+    _NUM_FRAMERATES  = 9
+    _FORCE_32BITS    = 0x7FFFFFFF
+
+class FCColorProcessingAlgorithm(object):
+    _DEFAULT               = 0
+    _NO_COLOR_PROCESSING   = 1
+    _NEAREST_NEIGHBOR_FAST = 2
+    _EDGE_SENSING          = 3
+    _HQ_LINEAR             = 4
+    _RIGOROUS              = 5
+    _IPP                   = 6
+    _DIRECTIONAL           = 7
+    _FORCE_32BITS          = 0x7FFFFFFF
+
+
+    
 ctypedef union fc2ContextContainer:
     fc2Context   as_void
     unsigned int as_int    
@@ -132,7 +188,7 @@ cdef class Camera(object):
         pass
 
     def __init__(self, my_context_int, v0,v1, v2, v3):
-        """Keith"""
+        """"""
         self._container.as_int = my_context_int
         self._context = self._container.as_void        
         self.guid.value[0] = v0
@@ -141,15 +197,15 @@ cdef class Camera(object):
         self.guid.value[3] = v3
 
     def Connect(self):
-        """Hello"""
+        """"""
         errcheck(fc2Connect(self._context, &self.guid))
 
     def StartCapture(self):
-        """Hello"""
+        """"""
         errcheck(fc2StartCapture(self._context))
 
     def StopCapture(self):
-        """Hello"""
+        """"""
         errcheck(fc2StopCapture(self._context))
 
     def GrabImageToDisk(self, filename, format="ext"):
@@ -158,7 +214,7 @@ cdef class Camera(object):
         cdef fc2Image convertedImage
                        
         errcheck(fc2CreateImage( &rawImage ))
-        errcheck(fc2CreateImage( &convertedImage ))        
+        errcheck(fc2CreateImage( &convertedImage ))
 
         # Retrieve the image
         errcheck(fc2RetrieveBuffer( self._context, &rawImage ))
@@ -174,8 +230,34 @@ cdef class Camera(object):
         errcheck(fc2DestroyImage( &rawImage ))
         errcheck(fc2DestroyImage( &convertedImage ))
 
+    def GrabPILImage(self):
+        """"""
+        cdef fc2Image rawImage
+
+        # We import PIL here so that PIL is only a requirement if you need PIL
+        from PIL import Image
+        
+        errcheck(fc2CreateImage( &rawImage ))
+
+        # Retrieve the image
+        errcheck(fc2RetrieveBuffer( self._context, &rawImage ))
+        
+        # calculate the size (in bytes) of the image        
+        width, height = rawImage.cols, rawImage.rows
+        size = width * height
+
+        # perform the creation of the PIL Image        
+        py_string = rawImage.pData[0:size]
+        pil_image = Image.fromstring('L', (width, height), py_string)
+
+        # clean up
+        errcheck(fc2DestroyImage( &rawImage ))
+        
+        return pil_image
+        
+
     def GrabImageToMemory(self, format="BMP"):
-        """Hey"""
+        """This is a really bad way to do this.  Fix later."""
         cdef fc2Image rawImage
         cdef fc2Image convertedImage
                 
@@ -258,7 +340,7 @@ cdef class Camera(object):
         errcheck(fc2DestroyImage( &convertedImage ))
 
     property timestamping:
-        """Hey"""
+        """timestamping property"""
         def __get__(self):
             cdef fc2EmbeddedImageInfo embeddedInfo
             errcheck(fc2GetEmbeddedImageInfo(self._context, &embeddedInfo))
@@ -272,7 +354,7 @@ cdef class Camera(object):
             errcheck(fc2SetEmbeddedImageInfo(self._context, &embeddedInfo))
             
     property info:
-        """Hey"""
+        """Camera information property"""
         def __get__(self):
             cdef fc2CameraInfo camInfo
             errcheck(fc2GetCameraInfo(self._context, &camInfo))            
@@ -306,14 +388,14 @@ cdef class Context(object):
         return "pyfly2.Context object at 0x%08X" % id(self)
 
     property num_cameras:
-        """Hey"""
+        """Returns the number of cameras connected to the host"""
         def __get__(self):
             cdef unsigned int num_cameras
             errcheck(fc2GetNumOfCameras(self._context, &num_cameras))
             return num_cameras
 
     def get_camera(self, unsigned int index):
-        """Hey"""
+        """get camera by index.  works differently from flycap 1 api"""
         cdef fc2PGRGuid guid
         errcheck(fc2GetCameraFromIndex(self._context, index, &guid))        
         cdef unsigned int c = self._container.as_int
