@@ -7,7 +7,7 @@ Python wrapper for Point Grey Research's FlyCapture2 C API
 Introduction
 ------------
 
-Hey!
+pyfly2 slowly coming together...
 
 
 Status
@@ -43,5 +43,5 @@ License:
 MIT
 
 
-(c) Keith Brafford, 2012
+(c) Keith Brafford, 2014
 
