@@ -15,6 +15,18 @@ Status
 
 This wrapper is currently under development.
 
+What works:  
+   - Creating flycapture2 context
+   - Creating single camera object and enabling capture mode
+   - Grabbing frames
+   - A few simple demos:
+      - Scriptable frame grab
+      - "Live preview" GUI with frame grab
+      
+What still needs to be done:
+   - Robustness (USB3 driver seems picky about shutting down the context.  This is a drag when debugging new features)
+   - Illustrate using multiple cores to enhance image pipeline using ZeroMQ
+
 Requirements
 ------------
 
