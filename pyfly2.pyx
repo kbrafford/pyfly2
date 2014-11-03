@@ -107,8 +107,6 @@ class FCColorProcessingAlgorithm(object):
     _DIRECTIONAL           = 7
     _FORCE_32BITS          = 0x7FFFFFFF
 
-
-    
 ctypedef union fc2ContextContainer:
     fc2Context   as_void
     unsigned int as_int    
@@ -159,8 +157,6 @@ def library_version():
     cdef fc2Version v
     errcheck(fc2GetLibraryVersion(&v))
     return (v.major, v.minor, v.type, v.build)
-
-    
 
 cdef class Camera(object):
     """Camera object"""
@@ -253,7 +249,28 @@ cdef class Camera(object):
         errcheck(fc2DestroyImage( &rawImage ))
         
         return pil_image
+
+    def GrabPILImage2(self):
+        """Attempts to return a PIL image shaving off one string slice operation"""
+        cdef fc2Image rawImage
+
+        # We import PIL here so that PIL is only a requirement if you need PIL
+        from PIL import Image
         
+        errcheck(fc2CreateImage( &rawImage ))
+
+        # Retrieve the image
+        errcheck(fc2RetrieveBuffer( self._context, &rawImage ))
+        
+        width, height = rawImage.cols, rawImage.rows
+
+        # perform the creation of the PIL Image        
+        pil_image = Image.frombuffer('L', (width, height), rawImage.pData)
+
+        # clean up
+        errcheck(fc2DestroyImage( &rawImage ))
+        
+        return pil_image
 
     def GrabImageToMemory(self, format="BMP"):
         """This is a really bad way to do this.  Fix later."""
