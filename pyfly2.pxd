@@ -745,4 +745,6 @@ cdef extern from "C/FlyCapture2_C.h":
 
     fc2TimeStamp fc2GetImageTimeStamp( fc2Image* pImage )
 
+    fc2Error fc2GetVideoModeAndFrameRate(fc2Context, fc2VideoMode *pvideoMode, fc2FrameRate *pframeRate)
+
 
