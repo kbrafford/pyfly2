@@ -3,4 +3,5 @@
 *.png
 *.jpg
 *.c
+*~
 build/*.*
