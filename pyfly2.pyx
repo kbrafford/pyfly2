@@ -227,6 +227,13 @@ cdef class Camera(object):
         image_format = self.image_format_map[format]
         errcheck(fc2SaveImage( &self.rgbImage, filename, image_format))
 
+    def GetSize(self):
+        """returns image size
+        """
+        errcheck(fc2RetrieveBuffer(self._context, &self.rawImage))
+        return (self.rawImage.cols, self.rawImage.rows)
+
+
     def GrabWxImage(self, scale=1.00, rgb=True):
         """returns a wximage
         optionally specifying scale and color
