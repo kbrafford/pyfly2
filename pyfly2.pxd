@@ -450,7 +450,7 @@ cdef extern from "C/FlyCapture2_C.h":
         unsigned int reserved[8]
        
 
-    ctypedef struct Property:
+    ctypedef struct fc2Property:
         fc2PropertyType   type
         bint present
         bint absControl
@@ -461,6 +461,7 @@ cdef extern from "C/FlyCapture2_C.h":
         unsigned int valueB 
         float absValue
         unsigned int reserved[8]
+
 
     ctypedef struct fc2TriggerDelay:
         fc2PropertyType   type
@@ -473,8 +474,6 @@ cdef extern from "C/FlyCapture2_C.h":
         unsigned int valueB 
         float absValue
         unsigned int reserved[8]
-
-
 
     ctypedef struct fc2TriggerModeInfo:
         bint present
@@ -747,4 +746,7 @@ cdef extern from "C/FlyCapture2_C.h":
 
     fc2Error fc2GetVideoModeAndFrameRate(fc2Context, fc2VideoMode *pvideoMode, fc2FrameRate *pframeRate)
 
+    fc2Error fc2GetPropertyInfo(fc2Context, fc2PropertyInfo *propInfo)
+    fc2Error fc2GetProperty(fc2Context, fc2Property *prop)
+    fc2Error fc2SetProperty(fc2Context, fc2Property *prop)
 

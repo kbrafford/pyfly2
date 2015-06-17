@@ -133,6 +133,15 @@ cdef inline bint errcheck(fc2Error result) except True:
         raise FC2Error(result)
     return is_error
 
+_PROPERTIES = dict(brightness = FC2_BRIGHTNESS,
+                   sharpness  = FC2_SHARPNESS,
+                   hue = FC2_HUE,
+                   saturation = FC2_SATURATION,
+                   gamma = FC2_GAMMA,
+                   shutter = FC2_SHUTTER,
+                   gain = FC2_GAIN,
+                   white_balance = FC2_WHITE_BALANCE)
+
 def library_version():
     """returns the version of the underlying FlyCapture2 library
 
@@ -214,6 +223,69 @@ cdef class Camera(object):
     def StopCapture(self):
         """"""
         errcheck(fc2StopCapture(self._context))
+
+    def GetProperty(self, name):
+        cdef fc2Property p
+        if name not in _PROPERTIES:
+            return None
+        p.type = _PROPERTIES[name]
+        errcheck( fc2GetProperty(self._context, &p))
+        return {"type": p.type,
+                "present": bool(p.present),
+                "autoManualMode": bool(p.autoManualMode),
+                "absControl": bool(p.absControl),
+                "onOff": bool(p.onOff),
+                "onePush": bool(p.onePush),
+                "absValue": p.absValue,
+                "valueA": p.valueA,
+                "valueB": p.valueB}
+
+
+    def SetPropertyValue(self, name, value, auto=False, absolute=True):
+        """Set Value for property.  Supports setting the properties
+        'brightness', 'sharpness', 'hue', 'saturation', 'gamma', 
+        'shutter', 'gain', and 'white_balance' (see note below).
+
+        Arguments
+        ---------
+        name       property name ('gamma', 'gain', 'shutter', ...)
+        value      value for property
+        absolute   whether value is absolute (physical units) default=True
+        auto       whether to set autoManualMode              default=False
+
+        Example
+        -------
+             context = pyfly2.Context()
+             camera  = context.get_camera(0)
+             camera.Connect()
+             camera.SetProperty('gain', 2.0)
+
+        Notes
+        ------
+           The 'white_balance' property takes a two-element tuple for values
+           for red- and blue-white balance.  Absolute control is forced to be 
+           False.  To set the white balance, use something like
+           
+             camera.SetProperty('white_balance', (550, 800))
+        """
+        cdef fc2Property p
+        if name not in _PROPERTIES:
+            return None
+        p.type = _PROPERTIES[name]
+        errcheck( fc2GetProperty(self._context, &p))
+        p.onOff = True
+        p.autoManualMode = auto
+
+        if p.type == FC2_WHITE_BALANCE:
+            p.valueA = value[0]
+            p.valueB = value[1]
+            p.absValue = 0.0
+            p.absControl = False
+        else:
+            p.absValue = value
+            p.absControl = absolute
+        errcheck( fc2SetProperty(self._context, &p))
+
 
     def GrabImageToDisk(self, filename, format="ext"):
         """"""
