@@ -305,6 +305,31 @@ cdef class Camera(object):
         errcheck(fc2RetrieveBuffer(self._context, &self.rawImage))
         return (self.rawImage.cols, self.rawImage.rows)
 
+    def GrabNumPyImage(self, format='bgr'):
+        """return an image as a NumPy array
+        optionally specifying color
+        """
+        errcheck(fc2RetrieveBuffer(self._context, &self.rawImage))
+        ncols, nrows = self.rawImage.cols, self.rawImage.rows
+        size = ncols * nrows
+        if format == 'bgr':
+            errcheck(fc2ConvertImageTo(FC2_PIXEL_FORMAT_RGB8,
+                                       &self.rawImage, &self.rgbImage))
+            bytes = bytearray(self.rgbImage.pData[:3*size])
+            img = np.array(bytes).reshape(nrows, ncols, 3)
+        elif format == 'rgb':
+            errcheck(fc2ConvertImageTo(FC2_PIXEL_FORMAT_BGR,
+                                       &self.rawImage, &self.rgbImage))
+            bytes = bytearray(self.rgbImage.pData[:3*size])
+            img = np.array(bytes).reshape(nrows, ncols, 3)
+        elif format == 'gray':
+            errcheck(fc2ConvertImageTo(FC2_PIXEL_FORMAT_MONO8,
+                                       &self.rawImage, &self.rgbImage))
+            bytes = bytearray(self.rgbImage.pData[:size])
+            img = np.array(bytes).reshape(nrows, ncols)
+        else:
+            raise ValueError("Invalid argument: format='%s'. Expected 'bgr', 'rgb', or 'gray'." % format)
+        return img
 
     def GrabWxImage(self, scale=1.00, rgb=True):
         """returns a wximage
