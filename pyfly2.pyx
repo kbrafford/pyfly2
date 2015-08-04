@@ -507,4 +507,6 @@ cdef class Context(object):
 
     def set_mode(self, videoMode, frameRate):
         """Set video mode and frame rate."""
-        errcheck(fc2GetVideoModeAndFrameRate(self._context, videoMode, frameRate))
+        cdef fc2VideoMode cVideoMode = videoMode
+        cdef fc2FrameRate cFrameRate = frameRate
+        errcheck(fc2SetVideoModeAndFrameRate(self._context, cVideoMode, cFrameRate))
