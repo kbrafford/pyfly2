@@ -313,12 +313,12 @@ cdef class Camera(object):
         ncols, nrows = self.rawImage.cols, self.rawImage.rows
         size = ncols * nrows
         if format == 'bgr':
-            errcheck(fc2ConvertImageTo(FC2_PIXEL_FORMAT_RGB8,
+            errcheck(fc2ConvertImageTo(FC2_PIXEL_FORMAT_BGR,
                                        &self.rawImage, &self.rgbImage))
             bytes = bytearray(self.rgbImage.pData[:3*size])
             img = np.array(bytes).reshape(nrows, ncols, 3)
         elif format == 'rgb':
-            errcheck(fc2ConvertImageTo(FC2_PIXEL_FORMAT_BGR,
+            errcheck(fc2ConvertImageTo(FC2_PIXEL_FORMAT_RGB8,
                                        &self.rawImage, &self.rgbImage))
             bytes = bytearray(self.rgbImage.pData[:3*size])
             img = np.array(bytes).reshape(nrows, ncols, 3)
@@ -499,7 +499,12 @@ cdef class Context(object):
         return Camera(c, guid.value[0], guid.value[1], guid.value[2], guid.value[3])
 
     def get_mode(self):
-        """get camera by index.  works differently from flycap 1 api"""
+        """Get video mode and frame rate."""
         cdef fc2VideoMode videoMode
         cdef fc2FrameRate frameRate
         errcheck(fc2GetVideoModeAndFrameRate(self._context, &videoMode, &frameRate))
+        return videoMode, frameRate
+
+    def set_mode(self, videoMode, frameRate):
+        """Set video mode and frame rate."""
+        errcheck(fc2GetVideoModeAndFrameRate(self._context, videoMode, frameRate))
