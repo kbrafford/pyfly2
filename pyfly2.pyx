@@ -360,7 +360,7 @@ cdef class Camera(object):
         size = width * height
 
         # perform the creation of the PIL Image
-        return Image.fromstring('L', (width, height), self.rawImage.pData[0:size])
+        return Image.frombytes('L', (width, height), self.rawImage.pData[0:size])
 
     def GrabImageToMemory(self, format="BMP"):
         """This is a really bad way to do this.  Fix later."""
