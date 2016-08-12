@@ -7,7 +7,10 @@ Python wrapper for Point Grey Research's FlyCapture2 C API
 Introduction
 ------------
 
-pyfly2 slowly coming together...
+pyfly2 slowly coming together, a lot slower than I want, but getting there.
+
+Note: This module is for Python2 and hasn't yet been updated to work with 
+Python3.
 
 
 Status
