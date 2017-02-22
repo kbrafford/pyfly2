@@ -5,3 +5,6 @@
 *.c
 *~
 build/*.*
+
+# C extensions
+*.so
